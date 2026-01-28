@@ -1,8 +1,6 @@
 import numpy as np
 import scipy.signal as signal
 import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from scipy.io import wavfile
 import librosa
 import librosa.display
 import pandas as pd
@@ -477,8 +475,8 @@ def get_trial_attributes(usv):
 
 
 # Manual sorting of calls from existing CSV
-def validate_usv(usv_csv, parent_dir):
-    if parent_dir == "25kHz":
+def validate_usv(usv_csv, freq_dir):
+    if freq_dir == "25kHz":
         usv_type = "25kHz call"
     else:
         usv_type = "USV"

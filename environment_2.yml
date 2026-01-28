@@ -4,9 +4,11 @@ channels:
 dependencies:
   - python=3.12.1
   - ipykernel
+  - pip
   - numpy==2.2.0
   - pandas==2.2.3
-  - scipy
+  - seaborn
   - matplotlib
-  - librosa
-prefix: /Users/sophieneale/miniforge3/envs/usvprocessing2
+  - statsmodels
+  - chardet
+prefix: /Users/sophieneale/miniforge3/envs/usvprocessing

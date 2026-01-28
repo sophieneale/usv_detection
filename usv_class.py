@@ -1,16 +1,12 @@
-import numpy as np
-import scipy.signal as signal
-import matplotlib.pyplot as plt
-from matplotlib import gridspec
-from scipy.io import wavfile
-import librosa
-import librosa.display
 import pandas as pd
+import numpy as np
+import librosa
+
 import os
-import soundfile as sf
 import time
-import usv_library as ul
 import json
+
+import usv_library as ul
 
 
 # USV class for processing different Wav files
@@ -56,28 +52,31 @@ class USV:
             self.trial_starts = [0]
             self.trial_duration = self.duration
 
-    def run_setup(self, freq_range, parent_dir):
+    def run_setup(self, freq_range, base_path, freq_dir):
 
         self.freq_range = freq_range
-        self.parent_dir = parent_dir
+        self.freq_dir = freq_dir
         self.pairs = []
         self.onset_times = []
         self.offset_times = []
         
+        # Set folder path for storing USV data
+        self.path = os.path.join(base_path, freq_dir, self.name)
+
         # Make folder for storing USV data if it doesn't exist
-        if not os.path.exists(f"USV_DATA/{self.parent_dir}/{self.name}"):
-            self.path = f"USV_DATA/{self.parent_dir}/{self.name}"
-            print(self.path)
+        if not os.path.exists(self.path):
             os.makedirs(self.path)
-            print(f"Folder for {self.name} created in {self.parent_dir}. Setting default parameters...")
+            print(self.path)
+
+            print(f"Folder for {self.name} created in USV_DATA\{self.freq_dir}. Setting default parameters...")
 
         # Set parameters for USV detection
-        if parent_dir == "25kHz":
+        if freq_dir == "25kHz":
             if self.trial_starts_file is not None:
                 self.set_default_params("25kHz_with_trial_starts.json")
             else:
                 self.set_default_params("25kHz_no_trial_starts.json")
-        elif parent_dir == "40kHz":
+        elif freq_dir == "40kHz":
             if self.trial_starts_file is not None:
                 self.set_default_params("40kHz_with_trial_starts.json")
             else:

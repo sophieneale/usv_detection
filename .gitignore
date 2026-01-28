@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+
+# Session data folder
+wavfiles/*
+!wavfiles/.gitkeep
+
+# Files
+analyze_csvs.ipynb
+
+# Environments
