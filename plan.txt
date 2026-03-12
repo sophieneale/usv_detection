@@ -1,0 +1,22 @@
+when running a file:
+
+need: 
+- wavfile name (based on naming convention)
+- trial starts csv
+- the range
+- the parameter file
+- calculated offset
+    - should be inputted as a number -- manually or set otherwise
+
+settings:
+- use trial starts to set thresholds (y/n)
+- 
+
+determine where to place a file in storage -- offsets need to be standardized
+should i create a tsv for all the files and stuff?
+
+steps:
+
+1. which presets are being used for the session
+look for session in data
+2. 

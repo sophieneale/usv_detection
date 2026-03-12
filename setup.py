@@ -31,28 +31,46 @@ def enter_rater_id():
     return rater_id
 
 
-def enter_freq_range():
-    var_name = "frequency range"
-    selection = get_input(var_name, "Which frequency range are you rating? (A) 20kHz or (B) 40kHz:")
+def enter_usv_type():
+    var_name = "usv_type"
+    selection = get_input(var_name, "Which USV type are you rating? (A) 25kHz ; (B) 40kHz ; (C) 22kHz:")
 
     while True:
         if selection == "":
-            selection = get_input(var_name, "Frequency range cannot be empty. Try again: ")
-        elif selection.strip().lower() not in ['a', 'b']:
-            selection = get_input(var_name, "You can only select option A or B. Try again: ")
+            selection = get_input(var_name, "USV type cannot be empty. Try again: ")
+        elif selection.strip().lower() not in ['a', 'b', 'c']:
+            selection = get_input(var_name, "You can only select A, B, or C. Try again: ")
         else:
             selection = selection.upper()
             break
     if selection == 'A':
-        parent_dir = "25kHz"
-        freq_range = (20000, 30000)
-    else:
-        parent_dir = "40kHz"
-        freq_range = (40000, 90000)
+        usv_type = "25kHz"
+    elif selection == 'B':
+        usv_type = "40kHz"
+    elif selection == 'C':
+        usv_type = "22kHz"
 
-    print(f"Frequency range set to: {freq_range}")
+    print(f"USV type set to: {usv_type}")
 
-    return freq_range, parent_dir
+    return usv_type
+
+def get_params(base_path, usv_type):
+    params_path = os.path.join(base_path, "default_params")
+
+    if usv_type not in ['25kHz', '40kHz', '22kHz']:
+        raise ValueError(f"Invalid USV type: {usv_type}. Must be 25kHz, 40kHz, or 22kHz.")
+
+    default_files = pd.DataFrame({"default_params": [f for f in os.listdir(params_path) if f.startswith(usv_type)]})
+
+    if default_files.empty:
+        raise FileNotFoundError(f"No default parameters file found for USV type: {usv_type} in default_params.")
+    
+    return default_files
+
+def choose_params(params_df):
+    selected_file = get_input("Parameter File", "Enter the name of the parameter file you want to use (including .json extension):")
+    return selected_file
+
 
 
 def search_session(base_path, wavfile_name):
@@ -66,7 +84,7 @@ def search_session(base_path, wavfile_name):
         return True, data_directory
 
 
-def search_labels(base_path, session_id):
+def search_labels(base_path, session_id, ):
     wavfolder_exists, wavfolder = search_session(base_path, session_id)
     
     if not wavfolder_exists:
@@ -132,6 +150,7 @@ def get_required_input(name, prompt):
     else:
         inputs[name] = value
         errors.pop(name, None)
+
 
 
 

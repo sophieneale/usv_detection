@@ -52,6 +52,7 @@ class USV:
             self.trial_starts = [0]
             self.trial_duration = self.duration
 
+
     def run_setup(self, freq_range, base_path, freq_dir):
 
         self.freq_range = freq_range
@@ -132,7 +133,6 @@ class USV:
             print(f"Default parameters loaded from default_params/{params_file} for {self.name}.")
         except AttributeError as e:
             raise AttributeError(f"Missing parameter in {json} - {e}")
-
 
 
     # Run to Detect USVs in a large .wav file
@@ -228,6 +228,9 @@ class USV:
             self.usv_data['trial_num'] = ul.get_trial_nums(self.usv_data['start'], self.trial_starts, self.trial_duration)
             self.usv_data = ul.get_before_open(self.usv_data, self.lever_press, self.trial_starts, self.trial_duration)
             self.usv_data = ul.get_trial_attributes(self)
+
+        # Add nearest neighbor column
+        self.usv_data['nearest_neighbor'] = ul.get_nearest_neighbors(self.pairs)
 
 
     def get_session_data(self):
