@@ -115,7 +115,7 @@ def get_offset(trial_starts_file):
     Get offset time from trial starts file.
     """
     markers = pd.read_csv(trial_starts_file, header=None)
-    beeps = markers[markers[0] == 'EVT32'].reset_index(drop=True)[[0, 4]].rename(columns={4: 'Timestamp', 0: 'Event'})
+    beeps = markers[markers[0] == 'T_start'].reset_index(drop=True)[[0, 4]].rename(columns={4: 'Timestamp', 0: 'Event'})
     print(beeps)
     plex_beep = get_input("Plexon Event Time", "Enter plexon beep time in seconds to align trials: ")
     audacity_beep = get_input("Audacity Event Time", "Enter audacity beep time in seconds: ")
