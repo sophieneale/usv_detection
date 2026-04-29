@@ -1,0 +1,21 @@
+{
+  "freq_range": [
+    40000,
+    90000
+  ],
+  "window_size": 30,
+  "chunk_duration": 5,
+  "frame_duration": 10,
+  "trial_duration": 300,
+  "on_std_multiplier": 1,
+  "off_std_multiplier": 0.5,
+  "amp_std_multiplier": 0.7,
+  "twentyfive": false,
+  "call_duration": [
+    0.008,
+    0.15
+  ],
+  "neighbor_distance": 0.2,
+  "has_markers": true,
+  "params_source": "40kHz_with_trial_starts"
+}
