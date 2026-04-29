@@ -45,13 +45,8 @@ class USV:
         if trial_starts_file != None:
             self.markers = pd.read_csv(self.trial_starts_file, header=None)
             self.beep_offset = offset
-            lever_press_markers = self.markers[self.markers[0] == 'Lever_press']
-            if len(lever_press_markers) > 0:
-                self.lever_press = lever_press_markers[4] - self.beep_offset
-            else:
-                self.lever_press = pd.Series(dtype=float)
-                
-            self.trial_starts = self.markers[self.markers[0] == 'T_start'][4] - self.beep_offset
+            self.lever_press = self.markers[self.markers[0] == 'Lever_press'][4] - self.beep_offset
+            self.trial_starts = self.markers[self.markers[0] == 'Trial_start'][4] - self.beep_offset
             self.trial_duration = 240
         else:
             self.trial_starts = [0]
@@ -231,9 +226,8 @@ class USV:
         # Add trial number and before_open columns if trial_starts / lever presses are provided
         if self.trial_starts is not None:
             self.usv_data['trial_num'] = ul.get_trial_nums(self.usv_data['start'], self.trial_starts, self.trial_duration)
-            if len(self.lever_press) > 0:
-                self.usv_data = ul.get_before_open(self.usv_data, self.lever_press, self.trial_starts, self.trial_duration)
-                self.usv_data = ul.get_trial_attributes(self)
+            self.usv_data = ul.get_before_open(self.usv_data, self.lever_press, self.trial_starts, self.trial_duration)
+            self.usv_data = ul.get_trial_attributes(self)
 
 
     def get_session_data(self):
@@ -241,7 +235,7 @@ class USV:
         Export trial information.
         """
         session_data = pd.DataFrame(columns= ['trial_num', 'trial_start', 'open_time', 'open_latency'])
-        session_data['trial_num'] = np.arange(1, len(self.trial_starts) + 1)
+        session_data['trial_num'] = np.arange(1,6)
         session_data['trial_start'] = self.trial_starts.values
         opens, open_latency = ul.get_open(self.lever_press, self.trial_starts, self.trial_duration)
         session_data['open_time'] = session_data['trial_num'].map(opens)
