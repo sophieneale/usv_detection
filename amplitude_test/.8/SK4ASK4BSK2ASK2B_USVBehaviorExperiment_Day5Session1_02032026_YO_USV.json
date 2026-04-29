@@ -12,7 +12,7 @@
     "frame_duration": 10,
     "on_std_multiplier": 1,
     "off_std_multiplier": 0.5,
-    "amp_std_multiplier": 1.0,
+    "amp_std_multiplier": 0.8,
     "onset_params": {
         "on_avg": 0.0031008411866022124,
         "on_std": 11.5573137637352,
@@ -23,7 +23,7 @@
         "off_std": 26.899485340128646,
         "off_thresh": 44.31209031723024
     },
-    "amp_thresh": 57.76183298729457,
+    "amp_thresh": 52.38193591926884,
     "has_markers": true,
     "params_source": "40kHz_with_trial_starts",
     "trial_starts_file": "wavfiles/SK4ASK4BSK2ASK2B_USVBehaviorExperiment_Day5Session1_02032026_YO\\trial_starts.csv",
