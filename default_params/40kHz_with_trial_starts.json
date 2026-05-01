@@ -7,7 +7,7 @@
   "chunk_duration": 5,
   "frame_duration": 10,
   "trial_duration": 300,
-  "on_std_multiplier": 1,
+  "on_std_multiplier": 0.5,
   "off_std_multiplier": 0.5,
   "amp_std_multiplier": 0.9,
   "twentyfive": false,
