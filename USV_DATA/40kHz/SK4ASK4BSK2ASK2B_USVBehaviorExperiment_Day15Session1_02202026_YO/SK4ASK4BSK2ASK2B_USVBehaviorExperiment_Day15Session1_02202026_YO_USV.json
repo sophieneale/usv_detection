@@ -1,0 +1,39 @@
+{
+    "wavfile": "C:\\Users\\User\\usv_detection\\wavfiles\\SK4ASK4BSK2ASK2B_USVBehaviorExperiment_Day15Session1_02202026_YO\\Dodotronic Track.wav",
+    "name": "SK4ASK4BSK2ASK2B_USVBehaviorExperiment_Day15Session1_02202026_YO",
+    "fs": 384000,
+    "duration": 1688.4447083333334,
+    "freq_range": [
+        40000,
+        90000
+    ],
+    "window_size": 30,
+    "chunk_duration": 5,
+    "frame_duration": 10,
+    "on_std_multiplier": 1.0,
+    "off_std_multiplier": 0.5,
+    "amp_std_multiplier": 0.5,
+    "onset_params": {
+        "on_avg": 0.00349597948470542,
+        "on_std": 9.625358367232545,
+        "on_thresh": 9.628854346717251
+    },
+    "offset_params": {
+        "off_avg": 26.6036487221447,
+        "off_std": 23.04370010818103,
+        "off_thresh": 38.12549877623522
+    },
+    "amp_thresh": 38.12549877623522,
+    "has_markers": true,
+    "params_source": "40kHz_with_trial_starts",
+    "trial_starts_file": "wavfiles/SK4ASK4BSK2ASK2B_USVBehaviorExperiment_Day15Session1_02202026_YO\\trial_starts.csv",
+    "trial_starts": [
+        52.379925,
+        470.905125,
+        891.563125,
+        1353.242125
+    ],
+    "trial_duration": 300,
+    "lever_press": [],
+    "beep_offset": 3.187875000000002
+}
