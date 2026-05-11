@@ -13,3 +13,4 @@ wavfiles/*
 analyze_csvs.ipynb
 
 # Environments
+spectrograms/*

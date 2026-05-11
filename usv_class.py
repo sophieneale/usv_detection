@@ -47,49 +47,12 @@ class USV:
             self.beep_offset = offset
             self.lever_press = self.markers[self.markers[0] == 'Lever_press'][4] - self.beep_offset
             self.trial_starts = self.markers[self.markers[0] == 'Trial_start'][4] - self.beep_offset
-            self.trial_duration = 240
         else:
             self.trial_starts = [0]
-            self.trial_duration = self.duration
 
-
-    def run_setup(self, freq_range, base_path, freq_dir):
-
-        self.freq_range = freq_range
-        self.freq_dir = freq_dir
         self.pairs = []
         self.onset_times = []
         self.offset_times = []
-        
-        # Set folder path for storing USV data
-        self.path = os.path.join(base_path, freq_dir, self.name)
-
-        # Make folder for storing USV data if it doesn't exist
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
-            print(self.path)
-
-            print(f"Folder for {self.name} created in USV_DATA\{self.freq_dir}. Setting default parameters...")
-
-        # Set parameters for USV detection
-        if freq_dir == "25kHz":
-            if self.trial_starts_file is not None:
-                self.set_default_params("25kHz_with_trial_starts.json")
-            else:
-                self.set_default_params("25kHz_no_trial_starts.json")
-        elif freq_dir == "40kHz":
-            if self.trial_starts_file is not None:
-                self.set_default_params("40kHz_with_trial_starts.json")
-            else:
-                self.set_default_params("40kHz_no_trial_starts.json")
-            
-        # else:
-        #     print(f"Folder for {self.name} found in {self.folder}.")
-        #     labels_file = os.path.join(self.path, "labels.csv") # change to audacity labels extension
-        #     if os.path.exists(labels_file):
-        #         print("Audacity labels found.")
-        #         print(f"File name: {self.name + 'labels.csv'}")
-
 
     def set_default_params(self, params_file):
         """
@@ -117,6 +80,7 @@ class USV:
                 setattr(self, key, value)
 
         try:
+            _ = self.usv_type
             _ = self.freq_range
             _ = self.window_size
             _ = self.chunk_duration
@@ -124,16 +88,21 @@ class USV:
             _ = self.on_std_multiplier
             _ = self.off_std_multiplier
             _ = self.amp_std_multiplier
+            _ = self.min_call_duration
+            _ = self.detect_between_trials
             _ = self.twentyfive
             if self.twentyfive:
-                _ = self.call_duration
-                _ = self.neighbor_distance
+                _ = self.max_call_duration
+                # add optional params check later
             _ = self.trial_starts is not None
             _ = self.params_source 
-            print(f"Default parameters loaded from default_params/{params_file} for {self.name}.")
+            print(f"Standard default parameters loaded from default_params/{params_file} for {self.name}.")
         except AttributeError as e:
             raise AttributeError(f"Missing parameter in {json} - {e}")
-
+        
+        if self.trial_starts is not None and not hasattr(self, 'trial_duration'):
+            raise ValueError("Trial duration must be specified if trial starts are provided and is not equal to the duration of the WAV file.")
+            
 
     # Run to Detect USVs in a large .wav file
     def detect_usv(self, frame_duration, freq_range):
@@ -146,14 +115,17 @@ class USV:
         """
         self.freq_range = freq_range
 
-        for start in self.trial_starts:
+        stream_starts = [0] if self.detect_between_trials else self.trial_starts
+        stream_duration = self.duration if self.detect_between_trials else self.trial_duration
+
+        for start in stream_starts:
         # Create a stream to load RAW data in chunks
             stream = librosa.stream(self.wavfile, 
                                     block_length= 1, 
                                     frame_length=self.fs*frame_duration, 
                                     hop_length=int(self.fs*frame_duration/2),
                                     offset = start,
-                                    duration=self.trial_duration)
+                                    duration=stream_duration)
             
             # Iterate through stream and operate on each chunk
             self.start_time = start
@@ -164,23 +136,21 @@ class USV:
                 # print(f"detected for chunk {i}, start time = {self.start_time}")
                 self.start_time += frame_duration/2
         
-        # Remove USVs that aren't within duration bounds for 25 kHz calls
+        # Remove USVs that are less than minimum call duration
+        self.pairs = list(filter(lambda pair: abs(pair[1] - pair[0]) > self.min_call_duration, self.pairs))
+
+        # Remove USVs that aren't within max duration bounds for 25 kHz calls
         if self.twentyfive:
-            self.pairs = list(filter(lambda pair: abs(pair[1] - pair[0]) > self.call_duration[0] 
-                                     and abs(pair[1] - pair[0]) <= self.call_duration[1], self.pairs))
+            self.pairs = list(filter(lambda pair: abs(pair[1] - pair[0]) <= self.max_call_duration, self.pairs))
             
             # Remove USVs that are not within neighbor distance for 25 kHz calls
-            nearest_neighbors = ul.get_nearest_neighbors(np.array(self.pairs))
+            if hasattr(self, 'neighbor_distance'):
+                nearest_neighbors = ul.get_nearest_neighbors(np.array(self.pairs))
+                if len(nearest_neighbors) != len(self.pairs):
+                    raise ValueError("Length of nearest neighbors does not match length of pairs.")
+                boolean_filter = np.array(list(map(lambda nn: nn <= self.neighbor_distance, nearest_neighbors)))
+                self.pairs = np.array(self.pairs)[boolean_filter].tolist()
 
-            if len(nearest_neighbors) != len(self.pairs):
-                raise ValueError("Length of nearest neighbors does not match length of pairs.")
-            
-            boolean_filter = np.array(list(map(lambda nn: nn <= self.neighbor_distance, nearest_neighbors)))
-            self.pairs = np.array(self.pairs)[boolean_filter].tolist()
-
-        else:
-            # Remove USVs that are less than 8ms in length
-            self.pairs = list(filter(lambda pair: abs(pair[1] - pair[0]) > 0.008, self.pairs))
 
 
     def detect_usv_helper(self, y, fs, freq_range, start_time):
@@ -229,9 +199,6 @@ class USV:
             self.usv_data = ul.get_before_open(self.usv_data, self.lever_press, self.trial_starts, self.trial_duration)
             self.usv_data = ul.get_trial_attributes(self)
 
-        # Add nearest neighbor column
-        self.usv_data['nearest_neighbor'] = ul.get_nearest_neighbors(self.pairs)
-
 
     def get_session_data(self):
         """
@@ -262,7 +229,7 @@ class USV:
             start = row['start']
             stop = row['stop']
             vec = ul.usv2vec(start, stop, wavfile, fs=None, n_fft=4096, hop_length=1024,
-                        n_mfcc=13, n_mels=40,fmin=20000, fmax=30000)
+                        n_mfcc=13, n_mels=40,fmin=self.freq_range[0], fmax=self.freq_range[1])
             self.usv_data.at[index, 'rms'] = vec[0]
             self.usv_data.at[index, 'zcr'] = vec[1]
             self.usv_data.at[index, 'centroid'] = vec[2]
@@ -274,16 +241,17 @@ class USV:
                 self.usv_data.at[index, f'contrast{i}'] = vec[6 + i]
 
 
-    def export_params(self):
+    def export_params(self, path):
         """
         Export the parameters used for USV detection to a json file.
         """
-        with open(f"{self.path}/{self.name}_USV.json", 'w') as f:
+        with open(f"{path}/{self.name}_USV.json", 'w') as f:
             params = {
                 "wavfile": self.wavfile,
                 "name": self.name,
                 "fs": self.fs,
                 "duration": self.duration,
+                "usv_type": self.usv_type,
                 "freq_range": self.freq_range,
                 "window_size": self.window_size,
                 "chunk_duration": self.chunk_duration,
@@ -291,6 +259,7 @@ class USV:
                 "on_std_multiplier": self.on_std_multiplier,
                 "off_std_multiplier": self.off_std_multiplier,
                 "amp_std_multiplier": self.amp_std_multiplier,
+                "min_call_duration": self.min_call_duration,
                 "onset_params": {
                     "on_avg": self.on_avg,
                     "on_std": self.on_std,
@@ -307,7 +276,8 @@ class USV:
             }
 
             if self.trial_starts is not None:
-                params["trial_starts_file"] = self.trial_starts_file
+                params["trial_starts_file"] = self.trial_starts_file.split('/')[-1]
+                params["detect_between_trials"] = self.detect_between_trials
                 params["trial_starts"] = self.trial_starts.tolist()
                 params["trial_duration"] = self.trial_duration
                 params["lever_press"] = self.lever_press.tolist()
@@ -315,31 +285,46 @@ class USV:
             
             if self.twentyfive:
                 params["twentyfive"] = self.twentyfive
-                params["call_duration"] = self.call_duration
-                params["neighbor_distance"] = self.neighbor_distance
+                params["max_call_duration"] = self.max_call_duration
+                if hasattr(self, 'neighbor_distance'): # implement for optional parameters
+                    params["neighbor_distance"] = self.neighbor_distance
 
             json.dump(params, f, indent=4)
+        
+        print(f"Parameters exported for {self.name}!")
 
 
-    def get_labels(self):
+    def get_labels(self, path):
         """
         Export the USV DataFrame to Audacity lables.
         """
         labels = self.usv_data[['start', 'stop', 'label']]
-        labels.to_csv(f'{self.path}/{self.name}_USV_aud.txt', sep='\t', index=False, header=False)
+        labels.to_csv(f'{path}/{self.name}_USV_aud.txt', sep='\t', index=False, header=False)
+
+        print(f"Audacity labels exported for {self.name}!")
 
     
-    def store_csvs(self):
+    def store_csvs(self, path):
         """
         Export the USV DataFrame to a CSV file.
         """
-        self.usv_data.to_csv(f'{self.path}/{self.name}_USV.csv', index=False)
+        self.usv_data.to_csv(f'{path}/{self.name}_USV.csv', index=False)
 
         if hasattr(self, 'session_data'):
-            self.session_data.to_csv(f'{self.path}/{self.name}_session_data.csv', index=False)
+            self.session_data.to_csv(f'{path}/{self.name}_session_data.csv', index=False)
+
+        print(f"CSV files stored for {self.name}!")
+
+    def save_all(self, path):
+        """
+        Run all export functions to save parameters, USV data, session data, and labels.
+        """
+        self.export_params(path)
+        self.store_csvs(path)
+        self.get_labels(path)
 
 
-    def validate_usvs(self):
+    def validate_usvs(self, path):
         """
         Validate detected USVs through manual rater input.
         """
@@ -347,18 +332,20 @@ class USV:
             if self.twentyfive:
                 twentyfives = ul.sort_25khz(self)
             else:
-                validated = ul.validate_usvs(f'{self.path}/{self.name}_USV_data.csv') # fix this
+                validated = ul.validate_usvs(f'{path}/{self.name}_USV_data.csv') # fix this
 
 
-    def run_usv_detection(self, freq_range):
+    def run_usv_detection(self, path):
         """
         Run the full USV detection pipeline: threshold calculation, USV detection, and storage.
         Parameters:
         - freq_range: Tuple specifying the frequency range for filtering (min_freq, max_freq).
         """
+        freq_range = self.freq_range
+        
         self.run_thresholds(freq_range)
-        print(f"Thresholds in the {freq_range[0]/1000}-{freq_range[1]/1000} kHz range\
-              for {self.name} have been set, beginning USV detection...")
+        print(f"Thresholds in the {freq_range[0]/1000}-{freq_range[1]/1000} kHz range \
+        for {self.name} have been set, beginning USV detection...")
         
         self.detect_usv(self.frame_duration, freq_range)
         print("usv detection complete... storing usvs")
@@ -373,14 +360,7 @@ class USV:
             self.get_session_data()
             print(f"Getting session data for {self.name}!")
         
-        self.export_params()
-        print(f"Parameters exported for {self.name}!")
-
-        self.store_csvs()
-        print(f"CSV files stored for {self.name}!")
-
-        self.get_labels()
-        print(f"Audacity labels exported for {self.name}!")
+        self.save_all(path)
 
         print("run_usv_detection complete!")
 

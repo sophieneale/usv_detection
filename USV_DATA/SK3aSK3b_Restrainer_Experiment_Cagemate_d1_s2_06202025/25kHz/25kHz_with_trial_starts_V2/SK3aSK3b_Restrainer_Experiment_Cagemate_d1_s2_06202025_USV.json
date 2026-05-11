@@ -1,0 +1,48 @@
+{
+    "wavfile": "/Users/sophieneale/Code/projects_work/usv_detection/wavfiles/SK3aSK3b_Restrainer_Experiment_Cagemate_d1_s2_06202025/Dodotronic Track.wav",
+    "name": "SK3aSK3b_Restrainer_Experiment_Cagemate_d1_s2_06202025",
+    "fs": 384000,
+    "duration": 2172.717833333333,
+    "usv_type": "25kHz",
+    "freq_range": [
+        15000,
+        35000
+    ],
+    "window_size": 30,
+    "chunk_duration": 10,
+    "frame_duration": 10,
+    "on_std_multiplier": 1,
+    "off_std_multiplier": 0.5,
+    "amp_std_multiplier": 1.5,
+    "min_call_duration": 0.008,
+    "onset_params": {
+        "on_avg": 0.0029995411367580876,
+        "on_std": 13.811464494976407,
+        "on_thresh": 13.814464036113165
+    },
+    "offset_params": {
+        "off_avg": 52.58225959640902,
+        "off_std": 33.08925131491404,
+        "off_thresh": 69.12688525386604
+    },
+    "amp_thresh": 102.21613656878007,
+    "has_markers": true,
+    "params_source": "25kHz_with_trial_starts_V2",
+    "trial_starts_file": "SK3aSK3b_Restrainer_Experiment_Cagemate_d1_s2_06202025_nontether_SK.csv",
+    "detect_between_trials": true,
+    "trial_starts": [
+        493.16499999999996,
+        846.0889999999999,
+        1203.2749999999999,
+        1549.715,
+        1899.105
+    ],
+    "trial_duration": 240,
+    "lever_press": [
+        1369.2849999999999,
+        2019.695
+    ],
+    "beep_offset": 1.545000000000016,
+    "twentyfive": true,
+    "max_call_duration": 0.15
+}

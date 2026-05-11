@@ -23,7 +23,7 @@ def pad_to_square(img):
         raise ValueError("Width is greater than height, cannot pad to square.")
 
 
-def get_spectrogram(wavfile, classification, time_window, name, freq_range=(15000, 35000), save=True, buffer=0.01, gain=1):
+def get_spectrogram(wavfile, classification, time_window, name, freq_range=(15000, 40000), save=True, buffer=0.01, gain=1):
     """
     Takes in a WAV file path with time stamps and returns a spectrogram image of a USV.
     """
@@ -51,9 +51,10 @@ def pad_spectrograms(directory):
             padded_img.save(f"{directory}/padded/pad_{img_file}")
 
 
-def get_from_rated(wavfile, csv, folder):
+def get_from_rated(wavfile, df, folder):
     # need to load csv to get list of usvs with start/stop and 25 rating
-    usv_data = pd.read_csv(csv)[['start', 'stop', 'label', '25_kHz_call']]
+    usv_data = df[['start', 'stop', 'label', '25_kHz_call']]
+    # usv_data = pd.read_csv(csv)[['start', 'stop', 'label', '25_kHz_call']]
     split_name = folder.split("_")
     session = split_name[0]+split_name[4]+split_name[5]
 

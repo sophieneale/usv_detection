@@ -1,0 +1,48 @@
+{
+    "wavfile": "/Users/sophieneale/Code/projects_work/usv_detection/wavfiles/SK2aSK1b_Restrainer_Experiment_Other_d5_s1_12022025/Dodotronic Track.wav",
+    "name": "SK2aSK1b_Restrainer_Experiment_Other_d5_s1_12022025",
+    "fs": 384000,
+    "duration": 1906.2782916666667,
+    "usv_type": "25kHz",
+    "freq_range": [
+        15000,
+        35000
+    ],
+    "window_size": 30,
+    "chunk_duration": 10,
+    "frame_duration": 10,
+    "on_std_multiplier": 1,
+    "off_std_multiplier": 0.5,
+    "amp_std_multiplier": 1.5,
+    "min_call_duration": 0.008,
+    "onset_params": {
+        "on_avg": 0.005964720042601364,
+        "on_std": 17.73031988754516,
+        "on_thresh": 17.736284607587763
+    },
+    "offset_params": {
+        "off_avg": 72.4790088159264,
+        "off_std": 65.27354689529146,
+        "off_thresh": 105.11578226357213
+    },
+    "amp_thresh": 170.38932915886357,
+    "has_markers": true,
+    "params_source": "25kHz_with_trial_starts_V2",
+    "trial_starts_file": "SK2aSK1b_Restrainer_Experiment_Other_d5_s1_12022025_SN.csv",
+    "detect_between_trials": true,
+    "trial_starts": [
+        76.4337,
+        479.3419,
+        846.9159,
+        1239.2219,
+        1657.2119
+    ],
+    "trial_duration": 240,
+    "lever_press": [
+        183.3029,
+        911.6668999999999
+    ],
+    "beep_offset": 10.5181,
+    "twentyfive": true,
+    "max_call_duration": 0.15
+}

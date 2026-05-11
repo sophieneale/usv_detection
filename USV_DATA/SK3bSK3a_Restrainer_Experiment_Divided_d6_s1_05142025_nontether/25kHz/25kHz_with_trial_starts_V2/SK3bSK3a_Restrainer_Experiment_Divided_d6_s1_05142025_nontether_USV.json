@@ -1,0 +1,49 @@
+{
+    "wavfile": "/Users/sophieneale/Code/projects_work/usv_detection/wavfiles/SK3bSK3a_Restrainer_Experiment_Divided_d6_s1_05142025_nontether/Dodotronic Track.wav",
+    "name": "SK3bSK3a_Restrainer_Experiment_Divided_d6_s1_05142025_nontether",
+    "fs": 384000,
+    "duration": 1865.0468333333333,
+    "usv_type": "25kHz",
+    "freq_range": [
+        15000,
+        35000
+    ],
+    "window_size": 30,
+    "chunk_duration": 10,
+    "frame_duration": 10,
+    "on_std_multiplier": 1,
+    "off_std_multiplier": 0.5,
+    "amp_std_multiplier": 1.5,
+    "min_call_duration": 0.008,
+    "onset_params": {
+        "on_avg": 0.0035982134401733186,
+        "on_std": 17.89642503362722,
+        "on_thresh": 17.900023247067395
+    },
+    "offset_params": {
+        "off_avg": 58.454097884346275,
+        "off_std": 51.63046733468702,
+        "off_thresh": 84.26933155168979
+    },
+    "amp_thresh": 135.8997988863768,
+    "has_markers": true,
+    "params_source": "25kHz_with_trial_starts_V2",
+    "trial_starts_file": "wavfiles/SK3bSK3a_Restrainer_Experiment_Divided_d6_s1_05142025_nontether/SK3bSK3a_Restrainer_Experiment_Divided_d6_s1_05142025_nontether_SK.csv",
+    "detect_between_trials": true,
+    "trial_starts": [
+        88.99560000000001,
+        452.1524,
+        825.2934,
+        1193.8203999999998,
+        1588.8403999999998
+    ],
+    "trial_duration": 240,
+    "lever_press": [
+        135.67940000000002,
+        916.7784,
+        1593.4904
+    ],
+    "beep_offset": 4.739599999999999,
+    "twentyfive": true,
+    "max_call_duration": 0.15
+}

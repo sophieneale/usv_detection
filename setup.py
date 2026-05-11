@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 
-
+# Universal function for enforcing valid user input validation with a quit option
 def get_input(var_name, prompt):
     value = input(prompt + " ('quit' to exit)").strip()
 
@@ -11,6 +11,9 @@ def get_input(var_name, prompt):
     return value
 
 
+### === Fucntions for getting various user inputs === ###
+
+# Gets rater ID from input. Must be 2 letters, first and last initials. 
 def enter_rater_id():
     var_name = "Rater ID"
     rater_id = get_input(var_name, "Enter rater ID (first/last initials):")
@@ -31,6 +34,7 @@ def enter_rater_id():
     return rater_id
 
 
+# Gets USV type from input. Must be A, B, or C for 25kHz, 40kHz, or 22kHz respectively.
 def enter_usv_type():
     var_name = "usv_type"
     selection = get_input(var_name, "Which USV type are you rating? (A) 25kHz ; (B) 40kHz ; (C) 22kHz:")
@@ -54,6 +58,7 @@ def enter_usv_type():
 
     return usv_type
 
+# Gets list of default parameter files for selected USV type. User will then select which file to use for rating.
 def get_params(base_path, usv_type):
     params_path = os.path.join(base_path, "default_params")
 
@@ -72,7 +77,6 @@ def choose_params(params_df):
     return selected_file
 
 
-
 def search_session(base_path, wavfile_name):
     data_directory = os.path.join(base_path, wavfile_name)
     if not os.path.exists(data_directory):
@@ -84,10 +88,10 @@ def search_session(base_path, wavfile_name):
         return True, data_directory
 
 
-def search_labels(base_path, session_id, ):
-    wavfolder_exists, wavfolder = search_session(base_path, session_id)
+def search_labels(path, session_id):
+    wavfolder, wavfolder_empty = path_lookup(path)
     
-    if not wavfolder_exists:
+    if wavfolder_empty:
         return False
     
     labels_file = os.path.join(wavfolder, f"{session_id}_USV_aud.txt")
@@ -114,10 +118,9 @@ def get_trial_starts(base_path, session_id):
 
 
 def check_existing_rater(base_path, session_id, rater_id):
-    data_directory = os.path.join(base_path, session_id)
-    rater_file = os.path.join(data_directory, f"{session_id}_USV_rated_{rater_id}.csv")
+    rater_file = os.path.join(base_path, 'rated', f"{session_id}_USV_{rater_id}.csv")
     if os.path.exists(rater_file):
-        overwrite = input(f"Rater ID {rater_id} has already rated session {session_id}. Overwrite existing data? (y/n): ")
+        overwrite = input(f"Rater {rater_id} has already rated session {session_id}. Overwrite existing data? (y/n): ")
         if overwrite.lower() == 'y':
             print("Existing rater data will be overwritten.")
             return True
@@ -150,6 +153,32 @@ def get_required_input(name, prompt):
     else:
         inputs[name] = value
         errors.pop(name, None)
+
+# Search for existing path. Returns True when path exists and is empty. If path exists but is not empty, returns False to avoid overwriting existing data.
+def path_lookup(path):
+
+    if os.path.exists(path):
+        print(f"Path exists: {path}")
+        if len(os.listdir(path)) == 1 and os.listdir(path)[0] == "rated":
+            print("Path folder is empty. Ready to populate.")
+            empty = True
+        else:
+            print("Path folder is not empty. Check contents to avoid overwriting existing data.")
+            empty = False
+    else:
+        print(f"Path does not exist. Creating folder... \n{path}")
+        os.makedirs(os.path.join(path, 'rated'), exist_ok=False)
+        empty = True
+
+    return path, empty
+
+def find_file(name, path):
+    for root, dirs, files in os.walk(path):
+        if name in files:
+            return os.path.join(root, name)
+        if name in dirs:
+            return os.path.join(root, name)
+    return None
 
 
 

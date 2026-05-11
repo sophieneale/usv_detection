@@ -1,0 +1,21 @@
+{
+    "usv_type": "25kHz",
+    "freq_range": [
+        15000,
+        35000
+    ],
+    "window_size": 30,
+    "chunk_duration": 10,
+    "frame_duration": 10,
+    "on_std_multiplier": 1,
+    "off_std_multiplier": 0.5,
+    "amp_std_multiplier": 1.5,
+    "detect_between_trials": true,
+    "twentyfive": true,
+    "min_call_duration": 0.008,
+    "max_call_duration": 0.15,
+    "trial_duration": 240,
+    "has_markers": true,
+
+    "params_source": "25kHz_with_trial_starts_V2"
+}

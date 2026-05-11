@@ -475,8 +475,8 @@ def get_trial_attributes(usv):
 
 
 # Manual sorting of calls from existing CSV
-def validate_usv(usv_csv, freq_dir):
-    if freq_dir == "25kHz":
+def validate_usv(usv_csv, usv_type):
+    if usv_type == "25kHz":
         usv_type = "25kHz call"
     else:
         usv_type = "USV"
